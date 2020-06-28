@@ -1,0 +1,8 @@
+.btn-select{
+  vertical-align: center;
+  text-align: left !important;
+  color:black;
+  background-color: white;
+  width: 100%;
+  border: lightgray solid 1px;
+}

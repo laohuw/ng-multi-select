@@ -1,0 +1,21 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col">
+      <ngb-tabset>
+        <ngb-tab>
+          <ng-template ngbTabTitle><b>Multi-Select</b> </ng-template>
+          <ng-template ngbTabContent>
+            <button (click)="show()">show selected in console</button>
+            <div style="width:200px; height:500px;">
+              <app-ng-multi-select [dataList]="countries" [showTooltip]="false" [disabled]="false" [placeholder]="placeholder" [(selectedItems)]="selectedCountries"></app-ng-multi-select>
+            </div>
+
+
+          </ng-template>
+        </ngb-tab>
+
+      </ngb-tabset>
+
+    </div>
+  </div>
+</div>
