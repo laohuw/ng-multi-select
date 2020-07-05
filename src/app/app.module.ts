@@ -12,12 +12,14 @@ import { SortableDirective } from './sortable.directive';
 import { NgMultiSelectComponent } from './ng-multi-select/ng-multi-select.component';
 
 
+
 @NgModule({
   declarations: [
     AppComponent,
     MobileComponent,
     SortableDirective,
     NgMultiSelectComponent
+
   ],
   imports: [
     BrowserModule,

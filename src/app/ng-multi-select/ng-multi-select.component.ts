@@ -1,12 +1,28 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Inject,
+  Input,
+  NgZone,
+  OnDestroy,
+  OnInit,
+  Optional,
+  Output
+} from '@angular/core';
+import {fromEvent, merge, Subject} from "rxjs";
+import {takeUntil} from "rxjs/operators";
+import {DOCUMENT} from "@angular/common";
 
 @Component({
   selector: 'app-ng-multi-select',
   templateUrl: './ng-multi-select.component.html',
   styleUrls: ['./ng-multi-select.component.css']
 })
-export class NgMultiSelectComponent implements OnInit {
+export class NgMultiSelectComponent implements OnInit, OnDestroy {
+
   labels: any = {selectAll: 'Select All', unselectAll: 'UnselectAll'};
+  private bClose: boolean=true;
 
   @Input()
   set dataList(value: string[]) {
@@ -39,15 +55,36 @@ export class NgMultiSelectComponent implements OnInit {
   disabled: boolean = false;
   classesBtn: string[];
   collapse: boolean = false;
+  private readonly _destroy$ = new Subject<void>();
+  private _ng_select: HTMLElement;
 
-  constructor() {
+  constructor(
+      private _elementRef: ElementRef,
+      private _zone:NgZone,
+      @Optional() @Inject(DOCUMENT) private _document: any) {
+    this._ng_select=_elementRef.nativeElement;
   }
 
   ngOnInit() {
-
     if (!this.classesBtn)
       this.classesBtn = ['btn-block', 'btn-default'];
+    this._handleOutsideClick();
   }
+
+  private _handleOutsideClick() {
+    if (!this._document) {
+      return;
+    }
+
+    this._zone.runOutsideAngular(() => {
+      merge(
+          fromEvent(this._document, 'touchstart', { capture: true }),
+          fromEvent(this._document, 'mousedown', { capture: true })
+      ).pipe(takeUntil(this._destroy$))
+          .subscribe($event => this._checkToClose($event));
+    });
+  }
+
 
   toggleDropdown() {
     this.collapse = !this.collapse;
@@ -112,5 +149,30 @@ export class NgMultiSelectComponent implements OnInit {
     }else
       Object.assign(this.filteredOptions, this.unselectedOptions);
 
+  }
+
+  private _checkToClose($event: any) {
+    if (this._ng_select.contains($event.target) ) {
+      return;
+    }
+
+    const path = $event.path || ($event.composedPath && $event.composedPath());
+    if ($event.target && $event.target.shadowRoot && path && path[0] && this._ng_select.contains(path[0])) {
+      return;
+    }
+
+    this._zone.run(() => this.close());
+  }
+  ngOnDestroy(): void {
+    this._destroy$.next();
+    this._destroy$.complete();
+    this._destroy$.unsubscribe();
+    // if (this.appendTo) {
+    //   this._renderer.removeChild(this._dropdown.parentNode, this._dropdown);
+    // }
+  }
+
+  private close() {
+    this.collapse =false;
   }
 }

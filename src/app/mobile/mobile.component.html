@@ -6,14 +6,31 @@
           <ng-template ngbTabTitle><b>Multi-Select</b> </ng-template>
           <ng-template ngbTabContent>
             <button (click)="show()">show selected in console</button>
-            <div style="width:200px; height:500px;">
-              <app-ng-multi-select [dataList]="countries" [showTooltip]="false" [disabled]="false" [placeholder]="placeholder" [(selectedItems)]="selectedCountries"></app-ng-multi-select>
+            <div style="width:200px; height:40px;display: inline-block;">
+              <app-ng-multi-select [dataList]="countries" [showTooltip]="false" [disabled]="false" [placeholder]="placeholder" [(selectedItems)]="selectedCountries" style="z-index:100;"></app-ng-multi-select>
             </div>
-
-
+            <div style="width:200px; height:40px;display: inline-block;">
+              <app-ng-multi-select [dataList]="countries" [showTooltip]="false" [disabled]="false" [placeholder]="placeholder" [(selectedItems)]="selectedCountries" style="z-index:90;"></app-ng-multi-select>
+            </div>
           </ng-template>
         </ngb-tab>
-
+        <ngb-tab>
+          <ng-template ngbTabTitle><b>Test 2</b></ng-template>
+          <ng-template ngbTabContent>
+            <ng-select [items]="people" style="width:200px;height: 40px; display: inline-block;"
+                       bindLabel="name"
+                       autofocus
+                       bindValue="id"
+                       [(ngModel)]="selectedPersonId">
+            </ng-select>
+            <ng-select [items]="people"  style="width:200px;height: 40px; display: inline-block;"
+                       bindLabel="name"
+                       autofocus
+                       bindValue="id"
+                       [(ngModel)]="selectedPersonId">
+            </ng-select>
+          </ng-template>
+        </ngb-tab>
       </ngb-tabset>
 
     </div>
