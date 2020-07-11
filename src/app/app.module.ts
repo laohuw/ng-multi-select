@@ -12,6 +12,9 @@ import { SortableDirective } from './sortable.directive';
 import { NgMultiSelectComponent } from './ng-multi-select/ng-multi-select.component';
 import {HighchartsChartModule} from "highcharts-angular";
 import {AgGridModule} from "ag-grid-angular";
+import { DropdownFilterComponent } from './dropdown-filter/dropdown-filter.component';
+import {TestFilterComponent} from "./test-filter.component";
+import {SliderFloatingFilter} from "./slider-floating-filter.components";
 
 
 
@@ -20,7 +23,10 @@ import {AgGridModule} from "ag-grid-angular";
     AppComponent,
     MobileComponent,
     SortableDirective,
-    NgMultiSelectComponent
+    NgMultiSelectComponent,
+    DropdownFilterComponent,
+    TestFilterComponent,
+    SliderFloatingFilter,
 
   ],
   imports: [
@@ -32,7 +38,7 @@ import {AgGridModule} from "ag-grid-angular";
     ReactiveFormsModule,
     HttpClientModule,
     HighchartsChartModule,
-    AgGridModule.withComponents([])
+    AgGridModule.withComponents([SliderFloatingFilter, DropdownFilterComponent])
   ],
   providers: [],
   bootstrap: [AppComponent]

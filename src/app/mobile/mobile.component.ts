@@ -6,6 +6,9 @@ import {Country} from '../country';
 import {CountryService} from '../country.service';
 import {SortableDirective, SortEvent} from '../sortable.directive';
 import * as Highcharts from 'highcharts';
+import {DropdownFilterComponent} from "../dropdown-filter/dropdown-filter.component";
+import {Module, TextFilter} from "ag-grid-community";
+import {IFilterComp} from "ag-grid-community/dist/lib/interfaces/iFilter";
 
 // import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 
@@ -32,6 +35,7 @@ export class MobileComponent implements OnInit {
     @ViewChildren(SortableDirective) headers: QueryList<SortableDirective>;
     private people: any[] = [];
 
+    // public modules: Module[] = AllCommunityModules;
     constructor(public service: CountryService) {
         // this.countries$ = service.countries$;
         this.total$ = service.total$;
@@ -566,9 +570,14 @@ export class MobileComponent implements OnInit {
             resizable: true,
         },
         components: {
-            customNumberFloatingFilter: getSelectFilterComponent()
+            selectFloatingFilter: getSelectFilterComponent(),
         }
+
     };
+    frameworkComponent= {
+
+        dropdownFilterComponent:DropdownFilterComponent
+    }
 
     columnDefs = [
         {
@@ -578,15 +587,28 @@ export class MobileComponent implements OnInit {
         {
             field: "isActive",
             valueFormatter: activeFormatter,
-            suppressMenu: true,
-            suppressFilterButton: true,
-            filter: 'agTextColumnFilter',
-            floatingFilterComponent: 'customNumberFloatingFilter',
+
+            //option 1 using javascript
+            // suppressMenu: true,
+            // suppressFilterButton: true,
+            // filter: 'agTextColumnFilter',
+            // floatingFilterComponent: 'selectFloatingFilter',
+            // floatingFilterComponentParams: {
+            //     suppressFilterButton: true,
+            //     color: 'darkblue',
+            //     valueMap: new Map([['', ''], ["Active", 'true'], ['InActive', 'false']])
+            // }
+
+            //option 2 using angular component
+            floatingFilterComponent: 'dropdownFilterComponent',
             floatingFilterComponentParams: {
                 suppressFilterButton: true,
-                color: 'darkblue',
-                valueMap: new Map([['', ''], ["Active", 'true'], ['InActive', 'false']])
-            }
+                optionMap: new Map([['', ''], ["Active", 'true'], ['InActive', 'false']])
+            },
+            filter: 'agTextColumnFilter',
+            suppressMenu: false,
+
+            //other filters
             // filterParams: {
             //   suppressAndOrCondition:true,
             //   filterOptions: [
@@ -668,14 +690,20 @@ export class MobileComponent implements OnInit {
         },
         {
             field: 'age',
+            floatingFilterComponent: 'sliderFloatingFilter',
+            floatingFilterComponentParams: {
+                maxValue: 100,
+                suppressFilterButton: true,
+            },
             filter: 'agNumberColumnFilter',
-            filterParams: {filterOptions: ['inRange']},
+            suppressMenu: false,
         }
     ];
 
     defaultColDef = {
-        flex: 1,
+        editable:true,
         sortable: true,
+        flex: 1,
         filter: true,
         floatingFilter: true,
     };
@@ -953,7 +981,7 @@ function getSelectFilterComponent() {
 
     SelectFilter.prototype.init = function (params) {
         this.eGui = document.createElement('div');
-        var htmlTemplate = '<select name="options" id="options" style="width:100%;"> ';
+        var htmlTemplate = '<select name="options" id="options" style="width:100%; padding: 2px 5px;height: 25px;"> ';
         var mapSelect = params.valueMap;
         mapSelect.forEach((value, key) => {
             htmlTemplate = htmlTemplate.concat('<option value="').concat(value).concat('">').concat(key).concat('</option>');
@@ -966,8 +994,8 @@ function getSelectFilterComponent() {
 
         function onInputBoxChanged(event) {
             var value = event.target.value;
-            params.parentFilterInstance(function (instance) {
-                instance.onFloatingFilterChanged('equals', value);
+            params.parentFilterInstance(function (instance:IFilterComp) {
+                (<TextFilter>instance).onFloatingFilterChanged('equals', value);
             });
         }
 
