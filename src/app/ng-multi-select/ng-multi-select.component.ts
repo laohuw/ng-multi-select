@@ -1,4 +1,5 @@
 import {
+  AfterContentInit,
   Component,
   ElementRef,
   EventEmitter,
@@ -8,7 +9,8 @@ import {
   OnDestroy,
   OnInit,
   Optional,
-  Output
+  Output,
+  ViewEncapsulation
 } from '@angular/core';
 import {fromEvent, merge, Subject} from "rxjs";
 import {takeUntil} from "rxjs/operators";
@@ -17,18 +19,18 @@ import {DOCUMENT} from "@angular/common";
 @Component({
   selector: 'app-ng-multi-select',
   templateUrl: './ng-multi-select.component.html',
-  styleUrls: ['./ng-multi-select.component.css']
+  styleUrls: ['./ng-multi-select.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
-export class NgMultiSelectComponent implements OnInit, OnDestroy {
+export class NgMultiSelectComponent implements OnInit, OnDestroy, AfterContentInit {
 
   labels: any = {selectAll: 'Select All', unselectAll: 'UnselectAll'};
-  private bClose: boolean=true;
 
   @Input()
   set dataList(value: string[]) {
-    Object.assign(this._dataList, value);
-    Object.assign(this.unselectedOptions, this._dataList);
-    Object.assign(this.filteredOptions, this._dataList);
+    this._dataList=Array.from(value);
+    this.unselectedOptions=Array.from(this._dataList);
+    this.filteredOptions=Array.from(this._dataList);
   }
 
   @Input("showTooltip")
@@ -105,14 +107,14 @@ export class NgMultiSelectComponent implements OnInit, OnDestroy {
     this.selectedItems = this._dataList.slice();
     this.selectedItemsChange.emit(this.selectedItems);
     this.unselectedOptions = []
-    Object.assign(this.filteredOptions, this.unselectedOptions);
+    this.filteredOptions=Array.from( this.unselectedOptions);
   }
 
   unselectAll() {
     this.selectedItems = [];
     this.selectedItemsChange.emit(this.selectedItems);
     this.unselectedOptions = this._dataList.slice();
-    Object.assign(this.filteredOptions, this.unselectedOptions);
+    this.filteredOptions=Array.from( this.unselectedOptions);
   }
 
   getDisplay(option: string) {
@@ -126,12 +128,12 @@ export class NgMultiSelectComponent implements OnInit, OnDestroy {
     let selectedIndex = this.selectedItems.indexOf(item);
     if (selectedIndex >= 0) {
       this.unselectedOptions.push(item);
-      Object.assign(this.filteredOptions, this.unselectedOptions);
+      this.filteredOptions=Array.from( this.unselectedOptions);
       this.selectedItems.splice(selectedIndex, 1);
     } else if (!this.selectionLimit ||  this.selectedItems.length < this.selectionLimit) {
       let unselectedIndex = this.unselectedOptions.indexOf(item);
       this.unselectedOptions.splice(unselectedIndex, 1);
-      Object.assign(this.filteredOptions, this.unselectedOptions);
+      this.filteredOptions=Array.from( this.unselectedOptions);
       this.selectedItems.push(item);
     }
     this.selectedItemsChange.emit(this.selectedItems);
@@ -147,8 +149,19 @@ export class NgMultiSelectComponent implements OnInit, OnDestroy {
       txtFilter=txtFilter.toLowerCase();
       this.filteredOptions=this.unselectedOptions.filter(item => item.toLowerCase().indexOf(txtFilter)>=0)
     }else
-      Object.assign(this.filteredOptions, this.unselectedOptions);
+      this.filteredOptions=Array.from( this.unselectedOptions);
 
+    this.selectedItems.sort((a:String, b:string)=>{return a.localeCompare(b)});
+    this.filteredOptions.sort((a:String, b:string)=>{return a.localeCompare(b)});
+  }
+
+  ngAfterContentInit(): void {
+    if(this.selectedItems.length>0)
+      this.selectedItems.forEach(item =>{
+        let index=this.unselectedOptions.indexOf(item);
+        this.unselectedOptions.splice(index, 1);
+      });
+    this.onSearchChange(this.searchFilter);
   }
 
   private _checkToClose($event: any) {
@@ -163,6 +176,7 @@ export class NgMultiSelectComponent implements OnInit, OnDestroy {
 
     this._zone.run(() => this.close());
   }
+
   ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
@@ -175,4 +189,6 @@ export class NgMultiSelectComponent implements OnInit, OnDestroy {
   private close() {
     this.collapse =false;
   }
+
 }
+

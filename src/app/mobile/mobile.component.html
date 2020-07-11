@@ -2,6 +2,21 @@
   <div class="row">
     <div class="col">
       <ngb-tabset>
+        <ngb-tab >
+          <ng-template ngbTabTitle><b>Ag-Grid</b></ng-template>
+          <ng-template ngbTabContent>
+            <ag-grid-angular
+                    #agGrid
+                    style="width: 100%; height: 500px;"
+                    id="myGrid"
+                    class="ag-theme-alpine"
+                    [columnDefs]="columnDefs"
+                    [defaultColDef]="defaultColDef"
+                    [rowData]="people"
+                    [gridOptions]="gridOptions"
+            ></ag-grid-angular>
+          </ng-template>
+        </ngb-tab>
         <ngb-tab>
           <ng-template ngbTabTitle><b>Multi-Select</b> </ng-template>
           <ng-template ngbTabContent>
@@ -31,6 +46,16 @@
             </ng-select>
           </ng-template>
         </ngb-tab>
+        <ngb-tab >
+          <ng-template ngbTabTitle><b>highchart</b></ng-template>
+          <ng-template ngbTabContent>
+            <button (click)="addData()">Add</button>
+            <highcharts-chart [Highcharts]="highcharts" [options]="chartOptions" style="width: 100%; height:100%; display: block;">
+
+            </highcharts-chart>
+          </ng-template>
+        </ngb-tab>
+
       </ngb-tabset>
 
     </div>

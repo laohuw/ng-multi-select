@@ -10,6 +10,8 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
 import { SortableDirective } from './sortable.directive';
 import { NgMultiSelectComponent } from './ng-multi-select/ng-multi-select.component';
+import {HighchartsChartModule} from "highcharts-angular";
+import {AgGridModule} from "ag-grid-angular";
 
 
 
@@ -29,7 +31,8 @@ import { NgMultiSelectComponent } from './ng-multi-select/ng-multi-select.compon
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-
+    HighchartsChartModule,
+    AgGridModule.withComponents([])
   ],
   providers: [],
   bootstrap: [AppComponent]
